@@ -4,7 +4,7 @@ import sys
 import subprocess
 import re
 
-def get_p():
+def get_p():			
         import socket
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.bind(("",0))
@@ -13,10 +13,14 @@ def get_p():
         s.close()
         return port
 
+#First, we get an open port from the system that is automatically assigned to the docker container
 sport = get_p()
 
+
+#This is in case we want to manually assign ports when running the container
 #sport = sys.argv[1]
 
+#Build the docker commands that we need to run
 drun_cmd = "docker run -l %s -d --security-opt seccomp=seccomp.json -p %s:3993 malice/windows-defender web" %(sport,sport)
 lscont_cmd =  "docker container ls -aq --filter label=%s" %(sport)
 dprune_cmd = "docker container prune -f"
@@ -30,8 +34,8 @@ if __name__ == "__main__":
 	print("Scanning file: '" + fpath + "' with Windows Defender AV")
 	process = subprocess.run(scmd.split(), stdout=subprocess.PIPE, check=True)
 	output = process.stdout
-#	print(output)
 	
+	#If the scanned filed is not infected, print "0" as the result, otherwise print "1" if infected
 	if ("false" in str(output)):
 		print("0")
 	elif ("true" in str(output)):
