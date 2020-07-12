@@ -29,6 +29,7 @@ fpath = sys.argv[1]
 scmd = "http -f localhost:%s/scan malware@%s" %(sport,fpath)
 
 if __name__ == "__main__":
+	#Run the docker command to scan the provided file
 	process = subprocess.run(drun_cmd.split(), stdout=subprocess.PIPE, check=True)
 
 	print("Scanning file: '" + fpath + "' with Windows Defender AV")
@@ -40,11 +41,13 @@ if __name__ == "__main__":
 		print("0")
 	elif ("true" in str(output)):
 		print("1")
-
+	
+	#Get the container ID for the container that was started and stop the container
 	process = subprocess.run(lscont_cmd.split(), stdout=subprocess.PIPE, check=True)
 	con_id = process.stdout
 	con_id = str(con_id)[2:14]
 	dstop_cmd = "docker container stop %s" %(con_id)
 
+	#Clean up the docker containers (prune them)
 	process = subprocess.run(dstop_cmd.split(), stdout=subprocess.PIPE, check=False)
 	process = subprocess.run(dprune_cmd.split(), stdout=subprocess.PIPE, check=True)
